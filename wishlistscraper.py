@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 username = input('Enter your username: ')
-maxOutput = input('Enter how many discounted games to show: ')
+maxOutput = input('Enter max. amount of discounted games to show: ')
 
 url = "https://store.steampowered.com/wishlist/id/" + username + "/#sort=order"
 wishlist_url = json.loads(re.findall(r'g_strWishlistBaseURL = (".*?");', requests.get(url).text)[0])
@@ -35,7 +35,7 @@ if(is_public):
         if data[i]['reviews_percent'] != 0:
             game_reviews = data[i]['reviews_percent']
         else:
-            game_reviews = 'No reviews.'
+            game_reviews = '/'
             
         if len(data[i]['subs']) != 0:
             game_price = "€{:,.2f}".format(data[i]['subs'][0]['price'] / 100)
@@ -69,3 +69,7 @@ plt.title('Show ' + str(maxOutput) + ' discounted wishlist items from ' + userna
 plt.ylabel('Discount in %')
 
 plt.show()
+
+print('All wishlisted games: \n')
+for i in sorted_dict:
+    print(i[0])
