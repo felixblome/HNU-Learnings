@@ -8,7 +8,10 @@ username = input('Enter your username: ')
 maxOutput = input('Enter max. amount of discounted games to show: ')
 
 url = "https://store.steampowered.com/wishlist/id/" + username + "/#sort=order"
-wishlist_url = json.loads(re.findall(r'g_strWishlistBaseURL = (".*?");', requests.get(url).text)[0])
+site_data = requests.get(url).text
+
+wishlist_url = json.loads(re.findall(r'g_strWishlistBaseURL = (".*?");', site_data)[0])
+
 entries = 0
 total_discounts = 0
 
@@ -22,7 +25,7 @@ all_prices = []
 
 if data.get('success'): # success = 2 means there is no data to recieve from Steam
     is_public = False
-    print('Wishlist is empty or private.')
+    print('\n' + 'Wishlist is empty or private.' + '\n')
 else:
     is_public = True
     print('\n' + username + ' has a public wishlist!' + '\n')
@@ -47,30 +50,32 @@ if(is_public):
     
 sorted_dict = sorted(game_dict.values(), key = lambda x:x[3])
 
-for i in sorted_dict:
-    if int(i[3]) > 0:
-        total_discounts += 1
-        if len(all_games) < int(maxOutput) and len(all_prices) < int(maxOutput) and len(all_discounts) < int(maxOutput):
-            all_games.append(i[0])
-            all_prices.append(i[2])
-            all_discounts.append(i[3])
+if(is_public):
+    for i in sorted_dict:
+        if int(i[3]) > 0:
+            total_discounts += 1
+            if len(all_games) < int(maxOutput) and len(all_prices) < int(maxOutput) and len(all_discounts) < int(maxOutput):
+                all_games.append(i[0])
+                all_prices.append(i[2])
+                all_discounts.append(i[3])
 
 print('Total wishlists: ' + str(entries) + '\n')
 print('Total discounted games: ' + str(total_discounts))
 
-for i in range(len(all_games)):
-    plt.text(i, all_discounts[i], all_prices[i], ha = 'center', Bbox = dict(facecolor = '#69a6ce', alpha = 1))
-    
-plt.rcParams["figure.figsize"] = (14, 6)
-plt.bar(all_games, all_discounts)
+if(is_public):    
+    for i in range(len(all_games)):
+        plt.text(i, all_discounts[i], all_prices[i], ha = 'center', Bbox = dict(facecolor = '#69a6ce', alpha = 1))
 
-plt.xticks(rotation = 90) 
-plt.title('Show ' + str(maxOutput) + ' discounted wishlist items from ' + username)
-plt.ylabel('Discount in %')
+    plt.rcParams["figure.figsize"] = (14, 6)
+    plt.bar(all_games, all_discounts)
 
-plt.show()
+    plt.xticks(rotation = 90) 
+    plt.title('Show ' + str(maxOutput) + ' discounted wishlist items from ' + username)
+    plt.ylabel('Discount in %')
 
-print('All wishlisted games: \n')
-for i in sorted_dict:
-    print(i[0] + ' - ' + str(i[1]) + ' - ' + i[2] + ' - ' + str(i[3]) + '% discount' )
-    print('\n')
+    plt.show()
+
+    print('All wishlisted games: \n')
+    for i in sorted_dict:
+        print(i[0] + ' - ' + str(i[1]) + ' - ' + i[2] + ' - ' + str(i[3]) + '% discount' )
+        print('\n')
