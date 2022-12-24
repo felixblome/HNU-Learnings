@@ -33,15 +33,15 @@ if(is_public):
         game_name = data[i]['name']
         
         if data[i]['reviews_percent'] != 0:
-            game_reviews = data[i]['reviews_percent']
+            game_reviews = str(data[i]['reviews_percent']) + '% positive'
         else:
-            game_reviews = '/'
+            game_reviews = 'No reviews.'
             
         if len(data[i]['subs']) != 0:
             game_price = "€{:,.2f}".format(data[i]['subs'][0]['price'] / 100)
             game_discount = str(data[i]['subs'][0]['discount_pct'])
         else:
-            game_price = '/'
+            game_price = 'No price.'
             game_discount = '0'
         game_dict[entries] = [game_name, game_reviews, game_price, game_discount]
     
@@ -72,4 +72,5 @@ plt.show()
 
 print('All wishlisted games: \n')
 for i in sorted_dict:
-    print(i[0])
+    print(i[0] + ' - ' + str(i[1]) + ' - ' + i[2] + ' - ' + str(i[3]) + '% discount' )
+    print('\n')
